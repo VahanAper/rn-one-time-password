@@ -1,6 +1,6 @@
 const admin = require('firebase-admin');
 
-module.exports = (request, response) => {
+module.exports = (request, response) => { // eslint-disable-line
     // Verify the user provided a phone
     if (!request.body.phone) {
         return response.status(422)

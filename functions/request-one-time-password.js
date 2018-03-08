@@ -11,13 +11,22 @@ module.exports = (request, response) => { // eslint-disable-line
     const phone = String(request.body.phone).replace(/[^d]/g, '');
     
     admin.auth().getUser(phone)
-        .then(user => {
+        .then(user => { // eslint-disable-line
             const code = Math.floor((Math.random() * 8999 + 1000));
             
             twilio.messages.create({
                 to: phone,
                 from: '+16153235722',
                 body: `Your code is: ${code}`,
+            }, (err) => { // eslint-disable-line
+                if (err) {
+                    return response.status(422).send(err);
+                }
+                
+                admin.database().ref(`users/${phone}`)
+                    .update({ code, codeValid: true }, () => {
+                        response.send({ success: true });
+                    });
             });
         })
         .catch(error => {

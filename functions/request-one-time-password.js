@@ -15,7 +15,7 @@ module.exports = (request, response) => { // eslint-disable-line
             const code = Math.floor((Math.random() * 8999 + 1000));
             
             twilio.messages.create({
-                to: phone,
+                to: `+${phone}`,
                 from: '+16153235722',
                 body: `Your code is: ${code}`,
             }, (err) => { // eslint-disable-line

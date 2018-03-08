@@ -8,13 +8,16 @@ module.exports = (request, response) => { // eslint-disable-line
     }
     
     const phone = String(request.body.phone).replace(/[^\d]/g, '');
-    const code = parseInt(code);
+    const code = parseInt(request.body.code);
     
     admin.auth().getUser(phone)
         .then(() => { // eslint-disable-line
             const ref = admin.database().ref(`users/${phone}`);
             
             ref.on('value', (snapshot) => { // eslint-disable-line
+                // Stop listening on('value') event
+                ref.off();
+                
                 const user = snapshot.val();
                 
                 if (user.code !== code || !user.codeValid) {
@@ -24,6 +27,10 @@ module.exports = (request, response) => { // eslint-disable-line
                 }
                 
                 ref.update({ codeValid: false });
+                
+                admin.auth().createCustomToken(phone) // eslint-disable-line
+                    .then(token => response.send({ token }))
+                    .catch(error => response.status(422).send({ error }));
             });
         })
         .catch((error) => response.status(422).send({ error }));

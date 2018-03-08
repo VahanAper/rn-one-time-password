@@ -8,10 +8,10 @@ module.exports = (request, response) => { // eslint-disable-line
         });
     }
     
-    const phone = String(request.body.phone).replace(/[^d]/g, '');
+    const phone = String(request.body.phone).replace(/[^\d]/g, '');
     
     admin.auth().getUser(phone)
-        .then(user => { // eslint-disable-line
+        .then((user) => { // eslint-disable-line
             const code = Math.floor((Math.random() * 8999 + 1000));
             
             twilio.messages.create({
@@ -30,6 +30,6 @@ module.exports = (request, response) => { // eslint-disable-line
             });
         })
         .catch(error => {
-            response.status(422).send({ error });
+            response.status(422).send({ error, phone });
         });
 };
